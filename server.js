@@ -4,7 +4,8 @@ const app = express()
 const mongoose = require('mongoose');
 require('./data.models');
 const mongodb = require("mongodb");
-const Data = mongoose.model('data');
+const dataSchema = mongoose.model('data');
+const sampleSchema = mongoose.model('sample');
 
 // Start DB -> mongod --config /usr/local/etc/mongod.conf --fork
 //       OR -> brew services start mongodb-community@6.0
@@ -27,19 +28,31 @@ mongoose.connection.once('connected', () => {console.log('HNO Database Connected
 
 app.post('/newData',  function (req, res) {
     //PATH TO HANDLE NEW DATA
+    //todo make function robust for both obd and hardware team data pushes
 
     //get data from request
     const data = {
-        time: req.body.time,
+        timestamp: req.body.obd.timestamp,
+        vehicleId: req.body.misc.vehicleId,
+        obd: req.body.obd,
+        misc: {
+            hydrogenLevel: req.body.misc.hydrogenLevel,
+            currentMPG: 2.352 * req.body.obd.EngineInstantaneousFuelEconomy,
+            fuelSavings: 1 / (req.body.misc.defaultMPG - this.currentMPG),
+            CO2Reductions: 10180 * this.fuelSavings,
+        }
     }
 
     //create schema instance
-    const newData = new Data({
-        time: data.time,
+    const newData = new dataSchema({
+        timestamp: data.timestamp,
+        vehicleId: data.vehicleId,
+        obd: data.obd,
+        misc: data.misc,
     });
 
     //save to DB
-    Data.insertMany(newData).then((err) => {
+    dataSchema.insertMany(newData).then((err) => {
         if (err) {
             console.log(err);
         } else {
@@ -51,26 +64,28 @@ app.post('/newData',  function (req, res) {
 app.get('/getData', function (req, res) {
     //PATH TO GET DATA
 
-    //todo handle in descending order (if we can't get it from cartwin, then we can offer data from hardware... failing that offer predefined data based off HNO findings.);
-    // - data from cartwin,
-    // - data from Hardware team,
-    // - data from assumptions
-
-    Data.find().then((data) => {
-        if (data != null) {
+    dataSchema.find().then((data) => {
+        if (data.length > 100) {
+            //Return real data if there is more than 100 entries
             res.json({
                 data: data,
             });
         }else{
-            res.status(401).json({
-                message: 'No data found',
+            //Return sample data if there is less than 100 entries
+            sampleSchema.find().then((data) => {
+                if (data != null) {
+                    res.json({
+                        data: data,
+                    });
+                }else{
+                    res.status(401).json({
+                        message: 'No data found',
+                    });
+                }
             });
         }
     });
 });
-
-//todo create other paths to offer different data/functionality
-// i.e. app.post('/getDataForGraph') ...
 
 app.listen(8080, () => console.log('API is running on http://localhost:8080/'))
 
