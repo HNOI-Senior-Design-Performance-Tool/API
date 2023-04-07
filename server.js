@@ -55,8 +55,14 @@ app.post('/newData',  function (req, res) {
     dataSchema.insertMany(newData).then((err) => {
         if (err) {
             console.log(err);
+            res.status(400).json({
+                message: 'Error saving data to DB'
+            });
         } else {
             console.log("Data saved to DB")
+            res.status(200).json({
+                message: 'Data saved to DB'
+            });
         }
     });
 });
@@ -67,14 +73,14 @@ app.get('/getData', function (req, res) {
     dataSchema.find().then((data) => {
         if (data.length > 100) {
             //Return real data if there is more than 100 entries
-            res.json({
+            res.status(201).json({
                 data: data,
             });
         }else{
             //Return sample data if there is less than 100 entries
             sampleSchema.find().then((data) => {
                 if (data != null) {
-                    res.json({
+                    res.status(202).json({
                         data: data,
                     });
                 }else{
@@ -87,5 +93,25 @@ app.get('/getData', function (req, res) {
     });
 });
 
-app.listen(8080, () => console.log('API is running on http://localhost:8080/'))
+app.get('/clearData', function (req, res) {
+    //delete all data from db if needed
+    dataSchema.deleteMany({}).then((err) => {
+        if (err) {
+            console.log(err);
 
+            res.status(401).json({
+                message: 'No data cleared from DB',
+            });
+
+        } else {
+            console.log("Data cleared from DB")
+
+            res.status(200).json({
+                message: 'Data cleared from DB',
+            });
+        }
+    });
+});
+
+app.listen(8080, () => console.log('API is running on http://localhost:8080/'))
+module.exports = app;
