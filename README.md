@@ -15,7 +15,7 @@ To add data to the database, using the API, you need to send a POST request to t
 }
 ```
 #### Using python
-Following is an example of how to send a POST request using pyhon:
+Following is an example of how to send a POST request using python:
 ```
 import requests
 import json
@@ -25,26 +25,27 @@ url = "http://localhost:3000/newData"
 
 # OBD data should just be added as it comes from the OBD (following is just an example)
 payload = {
-    "timestamp": "2012-04-23T18:25:43.511Z",
-    "vehicleId": 1,
-    "obd": {
-        "speed": 0,
-        "rpm": 0,
-        "throttle": 0,
-        "engineLoad": 0,
-        "coolantTemp": 0,
-        "fuelPressure": 0,
-        "intakePressure": 0,
-        "intakeTemp": 0,
-        "maf": 0,
-        "fuelLevel": 0,
-        "barometricPressure": 0,
-        "timingAdvance": 0,
-        "airFuelRatio": 0,
-        "fuelRate": 0
-    },
-    "misc": {
-        "hydrogenLevel": "75"
+        "timestamp": "2012-04-23T18:25:43.511Z",
+        "vehicleId": 1,
+        "obd": {
+            "speed": 0,
+            "rpm": 0,
+            "throttle": 0,
+            "engineLoad": 0,
+            "coolantTemp": 0,
+            "fuelPressure": 0,
+            "intakePressure": 0,
+            "intakeTemp": 0,
+            "maf": 0,
+            "fuelLevel": 0,
+            "barometricPressure": 0,
+            "timingAdvance": 0,
+            "airFuelRatio": 0,
+            "fuelRate": 0
+        },
+        "misc": {
+            "hydrogenLevel": "75"
+        }
     }
 
 # Send the request
