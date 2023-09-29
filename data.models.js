@@ -36,6 +36,35 @@ const sampleSchema = new Schema({
         type: Object,
     }
 });
+/*
+const vehicleDataSchema = new Schema({
+    vehicleName: {
+        type: String,
+        require: true
+    },
+    mpg: {
+        type: Number,
+        require: true
+    },
+    CO: {
+        type: Number,
+        require: true
+    },
+    NOx: {
+        type: Number,
+        require: true
+    },
+    fuelLevel: {
+        type: Number,
+        require: true
+    },
+    time: {
+        type: Date,
+        required: true
+    }
 
+}, { timestamps: true })
+*/
 mongoose.model('data', dataSchema)
 mongoose.model('sample', sampleSchema)
+//mongoose.model('VehicleData', vehicleDataSchema)
