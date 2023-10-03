@@ -21,13 +21,13 @@ app.use(
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
-
+/*
 // Middleware
 app.use((req, res, next) => {
     console.log(req.path, req.method)
     next()
 })
-
+*/
 // Middleware
 app.use(express.json())
 

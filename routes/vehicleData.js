@@ -4,14 +4,20 @@ const VehicleData = require('../models/vehicleDataModel')
 const router = express.Router()
 
 // Upload data
-router.post('/uploadData', (req, res) => {
+router.post('/uploadData', async (req, res) => {
     const {vehicleName, mpg, CO, NOx, fuelLevel, voltage, time} = req.body
 
-    res.json({msg: "POST DATA"})
+    // Add data to DB
+    try {
+        const vehicleData = await VehicleData.create({vehicleName, mpg, CO, NOx, fuelLevel, voltage, time})
+        res.status(200).json(vehicleData)
+    } catch (error) {
+        res.status(400).json({error: error.message})
+    }
 })
 
 // Get all data
-router.get('/getData', (req, res) => {
+router.get('/data', (req, res) => {
     res.json({msg: "GET ALL DATA"})
 })
 
@@ -21,17 +27,17 @@ router.get('/getSortedData', (req, res) => {
 })
 
 // Get a single specific data
-router.get('/getData/:id', (req, res) => {
+router.get('/data/:id', (req, res) => {
     res.json({msg: "GET SPECIFIC DATA"})
 })
 
 // Delete data
-router.delete('/deleteData/:id', (req, res) => {
+router.delete('/data/:id', (req, res) => {
     res.json({msg: "DELETE DATA"})
 })
 
 // Update a single data
-router.patch('/updateData/:id', (req, res) => {
+router.patch('/data/:id', (req, res) => {
     res.json({msg: "UPDATE SPECIFIC DATA"})
 })
 
