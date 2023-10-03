@@ -14,13 +14,45 @@ const uploadVehicleData = async (req, res) => {
 }
 
 // Get all data
+const getAllData = async (req, res) => {
+    const vehicleData = await VehicleData.find({}).sort({createdAt: -1})
 
+    res.status(200).json(vehicleData) 
+}
 
-// Get sorted data
+// Get latest single data point
+const getLatestDataPoint = async (req, res) => {
+    const vehicleData = await VehicleData.findOne({}).sort({createdAt: -1})
+
+    res.status(200).json(vehicleData)
+}
+
+// Get sorted data by time
+const getTimedData = async (req, res) => {
+    const { time } = req.params
+
+    const vehicleData = await VehicleData.findOne({ time: new Date(time)})
+
+    if (!vehicleData) {
+        return res.status(404).json({error: 'Specified data not found'})
+    }
+
+    res.status(200).json(vehicleData)
+}
 
 
 // Get a single specific data
+const getDataPoint = async (req, res) => {
+    const { id }  = req.params
 
+    const vehicleData = await VehicleData.findById(id)
+
+    if (!vehicleData) {
+        return res.status(404).json({error: 'Specified data not found'})
+    }
+
+    res.status(200).json(vehicleData)
+}
 
 // Delete data
 
@@ -28,3 +60,10 @@ const uploadVehicleData = async (req, res) => {
 // Update a single data
 
 
+module.exports = {
+    uploadVehicleData,
+    getAllData,
+    getDataPoint,
+    getTimedData,
+    getLatestDataPoint
+}

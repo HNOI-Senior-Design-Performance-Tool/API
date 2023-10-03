@@ -1,35 +1,29 @@
 const express = require('express')
+const {
+    uploadVehicleData,
+    getAllData,
+    getDataPoint,
+    getTimedData,
+    getLatestDataPoint
+} = require('../controllers/vehicleDataController')
 const VehicleData = require('../models/vehicleDataModel')
 
 const router = express.Router()
 
 // Upload data
-router.post('/uploadData', async (req, res) => {
-    const {vehicleName, mpg, CO, NOx, fuelLevel, voltage, time} = req.body
-
-    // Add data to DB
-    try {
-        const vehicleData = await VehicleData.create({vehicleName, mpg, CO, NOx, fuelLevel, voltage, time})
-        res.status(200).json(vehicleData)
-    } catch (error) {
-        res.status(400).json({error: error.message})
-    }
-})
+router.post('/uploadData', uploadVehicleData)
 
 // Get all data
-router.get('/data', (req, res) => {
-    res.json({msg: "GET ALL DATA"})
-})
+router.get('/data', getAllData)
 
-// Get sorted data
-router.get('/getSortedData', (req, res) => {
-    res.json({msg: "GET SORTED DATA"})
-})
+// Get sorted data by time
+router.get('/getTimedData/:time', getTimedData)
+
+// Get latest data point
+router.get('/latestDataPoint', getLatestDataPoint)
 
 // Get a single specific data
-router.get('/data/:id', (req, res) => {
-    res.json({msg: "GET SPECIFIC DATA"})
-})
+router.get('/data/:id', getDataPoint)
 
 // Delete data
 router.delete('/data/:id', (req, res) => {
