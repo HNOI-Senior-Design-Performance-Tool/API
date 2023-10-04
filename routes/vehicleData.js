@@ -1,4 +1,5 @@
 const express = require('express')
+const multer = require('multer');
 const {
     uploadVehicleData,
     getAllData,
@@ -10,9 +11,13 @@ const {
 const VehicleData = require('../models/vehicleDataModel')
 
 const router = express.Router()
+const upload = multer(); // Initialize multer
 
 // Upload data
 router.post('/uploadData', uploadVehicleData)
+
+// Upload data via file upload
+router.post('/uploadData', upload.single('jsonFile'), uploadVehicleData);
 
 // Get all data
 router.get('/data', getAllData)

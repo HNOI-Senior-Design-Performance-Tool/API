@@ -1,4 +1,5 @@
 const VehicleData = require('../models/vehicleDataModel')
+const fs = require('fs'); // Require the 'fs' module to work with files
 
 // Upload data
 const uploadVehicleData = async (req, res) => {
@@ -10,6 +11,37 @@ const uploadVehicleData = async (req, res) => {
         res.status(200).json(vehicleData)
     } catch (error) {
         res.status(400).json({error: error.message})
+    }
+}
+
+// Upload data via file 
+const uploadVehicleDataFile = async (req, res) => {
+    try {
+        if (!req.file) {
+            return res.status(400).json({error: 'No file upload'});
+        }
+        const fileData = req.file.buffer.toString(); // Assuming the uploaded file is in binary form
+
+        // Parse the JSON data from the file
+        const jsonData = JSON.parse(fileData);
+
+        // Assuming the JSON data in the file has the same structure as before
+        const { vehicleName, mpg, CO, NOx, fuelLevel, voltage, time } = jsonData;
+
+        // Add data to DB
+        const vehicleData = await VehicleData.create({
+            vehicleName,
+            mpg,
+            CO,
+            NOx,
+            fuelLevel,
+            voltage,
+            time,
+        });
+
+        res.status(200).json(vehicleData);
+    } catch (error) {
+        res.status(400).json({ error: error.message });
     }
 }
 
