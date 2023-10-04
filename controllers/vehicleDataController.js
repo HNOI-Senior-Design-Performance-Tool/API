@@ -27,6 +27,19 @@ const getLatestDataPoint = async (req, res) => {
     res.status(200).json(vehicleData)
 }
 
+// Get N latest data points
+const getNLatestData = async (req, res) => {
+    const { N } = req.params
+
+    const vehicleData = await VehicleData.find({}).sort({createdAt: -1}).limit(parseInt(N))
+
+    if (!vehicleData || vehicleData.length == 0) {
+        return res.status(404).json({error: 'Specified data not found'}) 
+    }
+
+    res.status(200).json(vehicleData)
+}
+
 // Get sorted data by time
 const getTimedData = async (req, res) => {
     const { time } = req.params
@@ -65,5 +78,6 @@ module.exports = {
     getAllData,
     getDataPoint,
     getTimedData,
-    getLatestDataPoint
+    getLatestDataPoint,
+    getNLatestData
 }

@@ -4,7 +4,8 @@ const {
     getAllData,
     getDataPoint,
     getTimedData,
-    getLatestDataPoint
+    getLatestDataPoint,
+    getNLatestData
 } = require('../controllers/vehicleDataController')
 const VehicleData = require('../models/vehicleDataModel')
 
@@ -20,7 +21,10 @@ router.get('/data', getAllData)
 router.get('/getTimedData/:time', getTimedData)
 
 // Get latest data point
-router.get('/latestDataPoint', getLatestDataPoint)
+router.get('/latestData', getLatestDataPoint)
+
+// Get N latest data points
+router.get('/latestData/:N', getNLatestData)
 
 // Get a single specific data
 router.get('/data/:id', getDataPoint)
