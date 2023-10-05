@@ -19,6 +19,10 @@ const vehicleDataSchema = new Schema({
         type: Number,
         require: true
     },
+      particulateMatter: {
+        type: Number,
+        require: true
+    },
     fuelLevel: {
         type: Number,
         require: true

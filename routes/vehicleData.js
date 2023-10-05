@@ -6,7 +6,10 @@ const {
     getDataPoint,
     getTimedData,
     getLatestDataPoint,
-    getNLatestData
+    getNLatestData,
+    deleteDataPoint,
+    updateDataPoint,
+    deleteAllData,
 } = require('../controllers/vehicleDataController')
 const VehicleData = require('../models/vehicleDataModel')
 
@@ -35,13 +38,12 @@ router.get('/latestData/:N', getNLatestData)
 router.get('/data/:id', getDataPoint)
 
 // Delete data
-router.delete('/data/:id', (req, res) => {
-    res.json({msg: "DELETE DATA"})
-})
+router.delete('/data/:id', deleteDataPoint)
 
 // Update a single data
-router.patch('/data/:id', (req, res) => {
-    res.json({msg: "UPDATE SPECIFIC DATA"})
-})
+router.patch('/data/:id', updateDataPoint)
+
+// Delete all data
+router.delete('/data' , deleteAllData)
 
 module.exports = router
