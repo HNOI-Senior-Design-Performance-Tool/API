@@ -112,6 +112,23 @@ const getTimedDataRange = async (req, res) => {
     res.status(200).json(vehicleData);
 }
 
+// Get sorted data by a start date/time
+const getTimedDataStart = async (req, res) => {
+    const { startTime } = req.params;
+
+    const vehicleData = await VehicleData.find({
+        time: {
+            $gt: new Date(startTime), // Greater than or equal to startTime
+        }
+    });
+
+    if (!vehicleData || vehicleData.length === 0) {
+        return res.status(404).json({ error: 'No data within the range' });
+    }
+
+    res.status(200).json(vehicleData);
+}
+
 
 // Get a single specific data
 const getDataPoint = async (req, res) => {
@@ -186,4 +203,6 @@ module.exports = {
     deleteDataPoint,
     updateDataPoint,
     deleteAllData,
+    getTimedDataRange,
+    getTimedDataStart,
 }

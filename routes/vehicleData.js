@@ -10,6 +10,8 @@ const {
     deleteDataPoint,
     updateDataPoint,
     deleteAllData,
+    getTimedDataRange,
+    getTimedDataStart,
 } = require('../controllers/vehicleDataController')
 const VehicleData = require('../models/vehicleDataModel')
 
@@ -27,6 +29,12 @@ router.get('/data', getAllData)
 
 // Get sorted data by time
 router.get('/getTimedData/:time', getTimedData)
+
+// Get data by time range
+router.get('/getTimedData/:startTime/:endTime', getTimedDataRange)
+
+// Get data by start time
+router.get('/latestDataGT/:startTime', getTimedDataStart)
 
 // Get latest data point
 router.get('/latestData', getLatestDataPoint)
