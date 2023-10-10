@@ -34,7 +34,6 @@ const uploadVehicleDataFile = async (req, res) => {
         // Parse the JSON data from the file
         const jsonData = JSON.parse(fileData)
 
-        // Assuming the JSON data in the file has the same structure as before
         const { vehicleName, mpg, CO, NOx, particulateMatter, fuelLevel, voltage, time } = jsonData
 
         // Add data to DB
@@ -82,7 +81,7 @@ const getNLatestData = async (req, res) => {
     res.status(200).json(vehicleData)
 }
 
-// Get sorted data by time
+// Get sorted data by date/time
 const getTimedData = async (req, res) => {
     const { time } = req.params
 
@@ -93,6 +92,24 @@ const getTimedData = async (req, res) => {
     }
 
     res.status(200).json(vehicleData)
+}
+
+// Get sorted data by a date/time range
+const getTimedDataRange = async (req, res) => {
+    const { startTime, endTime } = req.params;
+
+    const vehicleData = await VehicleData.find({
+        time: {
+            $gte: new Date(startTime), // Greater than or equal to startTime
+            $lte: new Date(endTime)    // Less than or equal to endTime
+        }
+    });
+
+    if (!vehicleData || vehicleData.length === 0) {
+        return res.status(404).json({ error: 'No data within the range' });
+    }
+
+    res.status(200).json(vehicleData);
 }
 
 
