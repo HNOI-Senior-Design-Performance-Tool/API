@@ -12,6 +12,7 @@ const {
     deleteAllData,
     getTimedDataRange,
     getTimedDataStart,
+    uploadManyVehicleData,
 } = require('../controllers/vehicleDataController')
 const VehicleData = require('../models/vehicleDataModel')
 
@@ -20,6 +21,9 @@ const upload = multer(); // Initialize multer
 
 // Upload data
 router.post('/uploadData', uploadVehicleData)
+
+// Upload many data
+router.post('/uploadManyData', uploadManyVehicleData)
 
 // Upload data via file upload
 router.post('/uploadData', upload.single('jsonFile'), uploadVehicleData);

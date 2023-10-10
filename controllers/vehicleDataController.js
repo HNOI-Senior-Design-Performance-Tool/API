@@ -23,6 +23,41 @@ const uploadVehicleData = async (req, res) => {
     }
 }
 
+// Upload Multiple data
+const uploadManyVehicleData = async (req, res) => {
+    const dataToInsert = req.body;
+
+    if (!Array.isArray(dataToInsert) || dataToInsert.length === 0) {
+        return res.status(400).json({ error: "Invalid input data" });
+    }
+
+    try {
+        const insertedData = [];
+
+        for (const data of dataToInsert) {
+            const { vehicleName, mpg, CO, NOx, particulateMatter, fuelLevel, voltage, time } = data;
+
+            // Add data to DB
+            const vehicleData = await VehicleData.create({
+                vehicleName,
+                mpg,
+                CO,
+                NOx,
+                particulateMatter,
+                fuelLevel,
+                voltage,
+                time,
+            });
+
+            insertedData.push(vehicleData);
+        }
+
+        res.status(200).json(insertedData);
+    } catch (error) {
+        res.status(400).json({ error: error.message });
+    }
+}
+
 // Upload data via file 
 const uploadVehicleDataFile = async (req, res) => {
     try {
@@ -205,4 +240,5 @@ module.exports = {
     deleteAllData,
     getTimedDataRange,
     getTimedDataStart,
+    uploadManyVehicleData,
 }
