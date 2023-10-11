@@ -13,7 +13,8 @@ In the same terminal that is now in the API directory run:
 ```
 npm install
 ```
-To start the API run:
+### Start the API
+Inside the API directory run:
 ```
 npm run dev
 ```
