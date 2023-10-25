@@ -98,7 +98,11 @@ const getAllData = async (req, res) => {
 
 // Get latest single data point
 const getLatestDataPoint = async (req, res) => {
-    const vehicleData = await VehicleData.findOne({}).sort({createdAt: -1})
+    const vehicleData = await VehicleData.findOne({}).sort({time: -1})
+
+    if (!vehicleData) {
+        return res.status(404).json({error: 'Specified data not found'})
+    }
 
     res.status(200).json(vehicleData)
 }
@@ -150,15 +154,20 @@ const getTimedDataRange = async (req, res) => {
 // Get sorted data by a start date/time
 const getTimedDataStart = async (req, res) => {
     const { startTime } = req.params;
+    const startTimeDate = new Date(startTime);
+
+    if(isNaN(Date.parse(startTimeDate))) {
+        return res.status(400).json({ error: 'Invalid date/time' });
+    }
 
     const vehicleData = await VehicleData.find({
-        time: {
-            $gt: new Date(startTime), // Greater than or equal to startTime
-        }
+      time: {
+        $gt: startTimeDate, // Greater than startTime
+      },
     });
 
     if (!vehicleData || vehicleData.length === 0) {
-        return res.status(404).json({ error: 'No data within the range' });
+        return res.status(204).json({ message: 'No data within the range' });
     }
 
     res.status(200).json(vehicleData);
