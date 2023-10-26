@@ -5,29 +5,29 @@ const Schema = mongoose.Schema
 const vehicleDataSchema = new Schema({
     vehicleName: {
         type: String,
-        require: true
+        require: false
     },
     mpg: {
         type: Number,
-        require: true
+        require: false
     },
     CO: {
         type: Number,
-        require: true
+        require: false
     },
     NOx: {
         type: Number,
-        require: true
+        require: false
     },
       particulateMatter: {
         type: Number,
-        require: true
+        require: false
     },
     fuelLevel: {
         type: Number,
-        require: true
+        require: false
     },
-    voltage: {
+    flowrate: {  // Flowrate of hydrogen Units: L/min
         type: Number,
         require: true
     },
