@@ -3,6 +3,10 @@ const mongoose = require('mongoose')
 const Schema = mongoose.Schema
 
 const vehicleDataSchema = new Schema({
+    vehicleID: {
+        type: String,
+        require: false
+    },
     vehicleName: {
         type: String,
         require: false
@@ -39,3 +43,29 @@ const vehicleDataSchema = new Schema({
 }, { timestamps: true })
 
 module.exports = mongoose.model('VehicleData', vehicleDataSchema)
+
+// Uncomment for time series
+// const vehicleDataSchema = Schema(
+//     {
+//       //time: Date,
+//       mpg: Number,
+//       CO: Number,
+//       NOx: Number,
+//       particulateMatter: Number,
+//       fuelLevel: Number,
+//       flowRate: Number,
+//       metadata: {
+//         vehicleID: String,
+//         vehicleName: String,
+//       },
+//     },
+//     {
+//       timeseries: {
+//         timeField: 'time',
+//         metaField: 'metadata',
+//         granularity: 'seconds',
+//       },
+//     }
+//   )
+
+//   module.exports = mongoose.model('VehicleData', vehicleDataSchema)

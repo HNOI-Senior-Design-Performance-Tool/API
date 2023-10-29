@@ -35,10 +35,11 @@ const uploadManyVehicleData = async (req, res) => {
         const insertedData = [];
 
         for (const data of dataToInsert) {
-            const { vehicleName, mpg, CO, NOx, particulateMatter, fuelLevel, voltage, time } = data;
+            const { vehicleID, vehicleName, mpg, CO, NOx, particulateMatter, fuelLevel, voltage, time } = data;
 
             // Add data to DB
             const vehicleData = await VehicleData.create({
+                vehicleID,
                 vehicleName,
                 mpg,
                 CO,
@@ -57,6 +58,49 @@ const uploadManyVehicleData = async (req, res) => {
         res.status(400).json({ error: error.message });
     }
 }
+
+// // Upload multiple for time series
+// const uploadManyVehicleData = async (req, res) => {
+//     const dataToInsert = req.body;
+
+//     if (!Array.isArray(dataToInsert) || dataToInsert.length === 0) {
+//         return res.status(400).json({ error: "Invalid input data" });
+//     }
+
+//     try {
+//         const insertedData = [];
+
+//         for (const data of dataToInsert) {
+//             const { vehicleName, mpg, CO, NOx, particulateMatter, fuelLevel, flowRate, time, vehicleID,  } = data;
+
+//             // Create an object that matches the updated schema
+//             const vehicleData = {
+//                 time,
+//                 mpg,
+//                 CO,
+//                 NOx,
+//                 particulateMatter,
+//                 fuelLevel,
+//                 flowRate,
+//                 //measured_at,
+//                 metadata: {
+//                     vehicleID,
+//                     vehicleName,
+//                 },
+//             };
+
+//             // Add data to DB
+//             const result = await VehicleData.create(vehicleData); 
+
+//             insertedData.push(result);
+//         }
+
+//         res.status(200).json(insertedData);
+//     } catch (error) {
+//         res.status(400).json({ error: error.message });
+//     }
+// }
+
 
 // Upload data via file 
 const uploadVehicleDataFile = async (req, res) => {
@@ -191,6 +235,18 @@ const getDataPoint = async (req, res) => {
     res.status(200).json(vehicleData)
 }
 
+// Get latest Fuel Level data point
+const getLatestFuelLevelData = async (req, res) => {
+    const fuelLevelData = await VehicleData.findOne({}).sort({ time: -1 }).select('fuelLevel');
+
+    if (!fuelLevelData) {
+        return res.status(404).json({ error: 'Specified data not found' });
+    }
+
+    res.status(200).json(fuelLevelData);
+}
+
+
 // Delete data
 const deleteDataPoint = async (req, res) => {
     const { id } = req.params
@@ -250,4 +306,5 @@ module.exports = {
     getTimedDataRange,
     getTimedDataStart,
     uploadManyVehicleData,
+    getLatestFuelLevelData,
 }

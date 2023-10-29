@@ -39,8 +39,10 @@ app.use((req, res, next) => {
 // Routes
 app.use('/api/vehicleData', vehicleDataRoutes)
 
-//Connect to DB instance
+//Connect to DB instance / Comment the line below to use time series
 mongoose.connect('mongodb+srv://admin:admin@seniordesigndb.2hphwnj.mongodb.net/?retryWrites=true&w=majority');
+// mongoose.connect('mongodb+srv://admin:admin@seniordesigndb.2hphwnj.mongodb.net/HNOI?retryWrites=true&w=majority');
+// Unccomment the line above to use time series.
 mongoose.connection.on('error', console.error.bind(console, 'HNO Database Connection Error:'));
 mongoose.connection.once('connected', () => {console.log('HNO Database Connected')});
 
