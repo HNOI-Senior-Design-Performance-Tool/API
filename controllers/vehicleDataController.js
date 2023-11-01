@@ -248,6 +248,68 @@ const deleteAllData = async (req, res) => {
     }
 }
 
+// Calculate and post the average data for the current month
+const getAverageMonthlyData = async (req, res) => {
+    // const currentDate = new Date()
+    // const startOfMonth = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1, 0, 0, 0)
+    // const endOfMonth = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0, 23, 59, 59)
+
+    const { startOfMonth, endOfMonth } = req.params
+
+    const vehicleData = await VehicleData.find({
+        time: {
+            $gte: startOfMonth, 
+            $lte: endOfMonth    
+        }
+    })
+
+    if (!vehicleData || vehicleData.length === 0) {
+        return res.status(404).json({ error: 'No data within the range' })
+    }
+
+    // Initialize objects to store the sum of each field and count of data points
+    const sum = {
+        mpg: 0,
+        CO: 0,
+        NOx: 0,
+        particulateMatter: 0,
+        fuelLevel: 0,
+        flowrate: 0,
+    };
+    let count = 0
+
+    // Calculate the sum of each field and count of data points
+    vehicleData.forEach(dataPoint => {
+        sum.mpg += dataPoint.mpg
+        sum.CO += dataPoint.CO
+        sum.NOx += dataPoint.NOx
+        sum.particulateMatter += dataPoint.particulateMatter
+        sum.fuelLevel += dataPoint.fuelLevel
+        sum.flowrate += dataPoint.flowrate
+        count++
+    })
+
+    // Calculate the average of each field
+    const average = {}
+    for (const key of Object.keys(sum)) {
+        average[key] = sum[key] / count
+    }
+
+    // Create a new document in the database to store the average values
+    const averageData = await VehicleData.create({
+        mpg: average.mpg,
+        CO: average.CO,
+        NOx: average.NOx,
+        particulateMatter: average.particulateMatter,
+        fuelLevel: average.fuelLevel,
+        flowrate: average.flowrate,
+        time: new Date(),
+    })
+
+    res.status(200).json({ averageData })
+}
+
+
 module.exports = {
     uploadVehicleData,
     getAllData,
@@ -262,4 +324,5 @@ module.exports = {
     getTimedDataStart,
     uploadManyVehicleData,
     getLatestFuelLevelData,
+    getAverageMonthlyData,
 }

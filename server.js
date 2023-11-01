@@ -133,4 +133,6 @@ app.get('/clearData', function (req, res) {
 
 app.listen(8080, () => console.log('API is running on http://localhost:8080/'))
 
+//const scheduledTask = require('./schedulers/avgData')
+
 module.exports = app;

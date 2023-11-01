@@ -14,6 +14,7 @@ const {
     getTimedDataStart,
     uploadManyVehicleData,
     getLatestFuelLevelData,
+    getAverageMonthlyData,
 } = require('../controllers/vehicleDataController')
 const VehicleData = require('../models/vehicleDataModel')
 
@@ -61,5 +62,8 @@ router.patch('/data/:id', updateDataPoint)
 
 // Delete all data
 router.delete('/data' , deleteAllData)
+
+// Calculate average montly data
+router.get('/averageMonthlyData', getAverageMonthlyData)
 
 module.exports = router
