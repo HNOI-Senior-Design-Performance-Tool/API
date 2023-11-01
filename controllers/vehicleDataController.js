@@ -227,6 +227,17 @@ const updateDataPoint = async (req, res) => {
     res.status(200).json(vehicleData)
 }
 
+// Get latest Fuel Level data point
+const getLatestFuelLevelData = async (req, res) => {
+    const fuelLevelData = await VehicleData.findOne({}).sort({ time: -1 }).select('fuelLevel');
+
+    if (!fuelLevelData) {
+        return res.status(404).json({ error: 'Specified data not found' });
+    }
+
+    res.status(200).json(fuelLevelData);
+}
+
 // Delete all data
 const deleteAllData = async (req, res) => {
     try {
@@ -250,4 +261,5 @@ module.exports = {
     getTimedDataRange,
     getTimedDataStart,
     uploadManyVehicleData,
+    getLatestFuelLevelData,
 }
