@@ -156,6 +156,7 @@ const getTimedDataStart = async (req, res) => {
     const { startTime } = req.params;
     const startTimeDate = new Date(startTime);
 
+    // Check if startTime is a valid date/time
     if(isNaN(Date.parse(startTimeDate))) {
         return res.status(400).json({ error: 'Invalid date/time' });
     }
@@ -191,7 +192,7 @@ const getDataPoint = async (req, res) => {
     res.status(200).json(vehicleData)
 }
 
-// Delete data
+// Delete data---------------
 const deleteDataPoint = async (req, res) => {
     const { id } = req.params
 
