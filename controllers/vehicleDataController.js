@@ -1,4 +1,5 @@
-const VehicleData = require('../models/vehicleDataModel')
+//const VehicleData = require('../models/vehicleDataModel')
+const { VehicleData, AvgData } = require('../models/vehicleDataModel');
 const mongoose = require('mongoose')
 const fs = require('fs'); // Require the 'fs' module to work with files
 
@@ -281,13 +282,14 @@ const getAverageMonthlyData = async (req, res) => {
 
     // Calculate the sum of each field and count of data points
     vehicleData.forEach(dataPoint => {
-        sum.mpg += dataPoint.mpg
-        sum.CO += dataPoint.CO
-        sum.NOx += dataPoint.NOx
-        sum.particulateMatter += dataPoint.particulateMatter
-        sum.fuelLevel += dataPoint.fuelLevel
-        sum.flowrate += dataPoint.flowrate
-        count++
+        // Check if the field is valid
+        if (dataPoint.mpg !== undefined) sum.mpg += dataPoint.mpg;
+        if (dataPoint.CO !== undefined) sum.CO += dataPoint.CO;
+        if (dataPoint.NOx !== undefined) sum.NOx += dataPoint.NOx;
+        if (dataPoint.particulateMatter !== undefined) sum.particulateMatter += dataPoint.particulateMatter;
+        if (dataPoint.fuelLevel !== undefined) sum.fuelLevel += dataPoint.fuelLevel;
+        if (dataPoint.flowrate !== undefined) sum.flowrate += dataPoint.flowrate;
+        count++;
     })
 
     // Calculate the average of each field
@@ -297,7 +299,7 @@ const getAverageMonthlyData = async (req, res) => {
     }
 
     // Create a new document in the database to store the average values
-    const averageData = await VehicleData.create({
+    const averageData = await AvgData.create({
         mpg: average.mpg,
         CO: average.CO,
         NOx: average.NOx,

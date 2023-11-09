@@ -38,4 +38,20 @@ const vehicleDataSchema = new Schema({
 
 }, { timestamps: true })
 
-module.exports = mongoose.model('VehicleData', vehicleDataSchema)
+const avgDataSchema = new Schema({
+    mpg: Number,
+    CO: Number,
+    NOx: Number,
+    particulateMatter: Number,
+    fuelLevel: Number,
+    flowrate: Number,
+    time: Date,
+}, { timestamps: true })
+
+const VehicleData = mongoose.model('VehicleData', vehicleDataSchema)
+const AvgData = mongoose.model('AvgData', avgDataSchema)
+
+module.exports = {
+    VehicleData,
+    AvgData,
+}

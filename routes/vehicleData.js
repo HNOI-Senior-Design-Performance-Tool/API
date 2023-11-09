@@ -64,6 +64,6 @@ router.patch('/data/:id', updateDataPoint)
 router.delete('/data' , deleteAllData)
 
 // Calculate average montly data
-router.get('/averageMonthlyData', getAverageMonthlyData)
+router.get('/averageMonthlyData/:startOfMonth/:endOfMonth', getAverageMonthlyData)
 
 module.exports = router
