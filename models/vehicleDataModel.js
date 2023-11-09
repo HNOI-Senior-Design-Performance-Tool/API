@@ -39,6 +39,8 @@ const vehicleDataSchema = new Schema({
 }, { timestamps: true })
 
 const avgDataSchema = new Schema({
+    startRange: Date,
+    endRange: Date,
     mpg: Number,
     CO: Number,
     NOx: Number,
