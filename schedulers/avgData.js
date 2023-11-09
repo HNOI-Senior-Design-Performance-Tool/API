@@ -58,6 +58,8 @@ const averageMonthlyData = async (req, res) => {
 
     // Create a new document in the database to store the average values
     const averageData = await AvgData.create({
+        startRange: startOfMonth,
+        endRange: endOfMonth,
         mpg: average.mpg,
         CO: average.CO,
         NOx: average.NOx,
