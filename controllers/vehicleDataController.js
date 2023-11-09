@@ -231,7 +231,7 @@ const updateDataPoint = async (req, res) => {
 
 // Get latest Fuel Level data point
 const getLatestFuelLevelData = async (req, res) => {
-    const fuelLevelData = await VehicleData.findOne({}).sort({ time: -1 }).select('fuelLevel');
+    const fuelLevelData = await VehicleData.findOne({}).sort({ time: -1 }).select('fuelLevel time');
 
     if (!fuelLevelData) {
         return res.status(404).json({ error: 'Specified data not found' });
