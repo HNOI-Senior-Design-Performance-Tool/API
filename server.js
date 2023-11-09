@@ -8,6 +8,7 @@ const dataSchema = mongoose.model('data');
 const sampleSchema = mongoose.model('sample');
 // const vehicleDataSchema = mongoose.model('VehicleData');
 const vehicleDataRoutes = require('./routes/vehicleData')
+const avgDataRoutes = require('./routes/avgData')
 
 // Start DB -> mongod --config /usr/local/etc/mongod.conf --fork
 //       OR -> brew services start mongodb-community@6.0
@@ -38,6 +39,7 @@ app.use((req, res, next) => {
 
 // Routes
 app.use('/api/vehicleData', vehicleDataRoutes)
+app.use('/api/avgData', avgDataRoutes)
 
 //Connect to DB instance
 mongoose.connect('mongodb+srv://admin:admin@seniordesigndb.2hphwnj.mongodb.net/?retryWrites=true&w=majority');

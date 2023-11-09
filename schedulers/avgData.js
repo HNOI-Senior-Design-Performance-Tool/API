@@ -1,4 +1,6 @@
 const schedule = require('node-schedule')
+const { VehicleData, AvgData } = require('../models/vehicleDataModel');
+const mongoose = require('mongoose')
 
 const scheduleRule = new schedule.RecurrenceRule()
 scheduleRule.dayOfMonth = 1
@@ -55,7 +57,7 @@ const averageMonthlyData = async (req, res) => {
     }
 
     // Create a new document in the database to store the average values
-    const averageData = await VehicleData.create({
+    const averageData = await AvgData.create({
         mpg: average.mpg,
         CO: average.CO,
         NOx: average.NOx,
