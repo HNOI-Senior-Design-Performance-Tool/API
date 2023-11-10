@@ -13,11 +13,19 @@ const avgDataRoutes = require('./routes/avgData')
 // Start DB -> mongod --config /usr/local/etc/mongod.conf --fork
 //       OR -> brew services start mongodb-community@6.0
 // Interact with DB manually -> mongosh
+// app.use(
+//   cors({
+//     origin: "http://localhost:3000",
+//     credentials: true,
+//   })
+// );
+
+// hosted on https://hnoi.netlify.app
 app.use(
-    cors({
-        origin: 'http://localhost:3000',
-        credentials: true,
-    })
+  cors({
+    origin: "https://hnoi.netlify.app",
+    credentials: true,
+  })
 );
 
 app.use(express.json());
