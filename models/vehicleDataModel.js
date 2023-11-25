@@ -7,6 +7,10 @@ const vehicleDataSchema = new Schema({
         type: String,
         require: false
     },
+    vehicle_ID: {
+        type: String,
+        require: false  // TODO: Change to true
+    },
     mpg: {
         type: Number,
         require: false
@@ -38,22 +42,31 @@ const vehicleDataSchema = new Schema({
 
 }, { timestamps: true })
 
-const avgDataSchema = new Schema({
-    startRange: Date,
-    endRange: Date,
+// Data schema for aggregated data
+// Could be used for averaged data or summed data
+const aggregateDataSchema = new Schema({
     mpg: Number,
+    mpgCount: Number,
+
     CO: Number,
+    COCount: Number,
+
     NOx: Number,
+    NOxCount: Number,
+
     particulateMatter: Number,
-    fuelLevel: Number,
-    flowrate: Number,
-    time: Date,
+    particulateMatterCount: Number,
+    
+    startTime: Date,
+    endTime: Date,
 }, { timestamps: true })
 
 const VehicleData = mongoose.model('VehicleData', vehicleDataSchema)
-const AvgData = mongoose.model('AvgData', avgDataSchema)
+const AvgData = mongoose.model("AvgData", aggregateDataSchema);
+const SumData = mongoose.model("SumData", aggregateDataSchema);
 
 module.exports = {
-    VehicleData,
-    AvgData,
-}
+  VehicleData,
+  AvgData,
+  SumData,
+};

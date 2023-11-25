@@ -1,5 +1,5 @@
 //const VehicleData = require('../models/vehicleDataModel')
-const { VehicleData, AvgData } = require('../models/vehicleDataModel');
+const { VehicleData, AvgData, SumData } = require("../models/vehicleDataModel");
 const mongoose = require('mongoose')
 const fs = require('fs'); // Require the 'fs' module to work with files
 
@@ -250,6 +250,8 @@ const deleteAllData = async (req, res) => {
     }
 }
 
+<<<<<<< HEAD
+=======
 // Calculate and post the average data for the current month
 const getAverageMonthlyData = async (req, res) => {
     // const currentDate = new Date()
@@ -315,19 +317,19 @@ const getAverageMonthlyData = async (req, res) => {
 }
 
 
+>>>>>>> 17ac062b50832f0b720d12d7aa163545ecbd631e
 module.exports = {
-    uploadVehicleData,
-    getAllData,
-    getDataPoint,
-    getTimedData,
-    getLatestDataPoint,
-    getNLatestData,
-    deleteDataPoint,
-    updateDataPoint,
-    deleteAllData,
-    getTimedDataRange,
-    getTimedDataStart,
-    uploadManyVehicleData,
-    getLatestFuelLevelData,
-    getAverageMonthlyData,
-}
+  uploadVehicleData,
+  getAllData,
+  getDataPoint,
+  getTimedData,
+  getLatestDataPoint,
+  getNLatestData,
+  deleteDataPoint,
+  updateDataPoint,
+  deleteAllData,
+  getTimedDataRange,
+  getTimedDataStart,
+  uploadManyVehicleData,
+  getLatestFuelLevelData,
+};
