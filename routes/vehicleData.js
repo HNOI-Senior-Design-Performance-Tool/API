@@ -1,21 +1,21 @@
 const express = require('express')
 const multer = require('multer');
 const {
-    uploadVehicleData,
-    getAllData,
-    getDataPoint,
-    getTimedData,
-    getLatestDataPoint,
-    getNLatestData,
-    deleteDataPoint,
-    updateDataPoint,
-    deleteAllData,
-    getTimedDataRange,
-    getTimedDataStart,
-    uploadManyVehicleData,
-    getLatestFuelLevelData,
-    getVehicleIDs,
-} = require('../controllers/vehicleDataController')
+  uploadVehicleData,
+  getAllData,
+  getDataPoint,
+  getTimedData,
+  getLatestDataPoint,
+  getNLatestData,
+  deleteDataPoint,
+  updateDataPoint,
+  deleteAllData,
+  getTimedDataRange,
+  getTimedDataStart,
+  uploadManyVehicleData,
+  getLatestFuelLevelData,
+  getVehicles,
+} = require("../controllers/vehicleDataController");
 const VehicleData = require('../models/vehicleDataModel')
 
 const router = express.Router()
@@ -63,7 +63,7 @@ router.patch('/data/:id', updateDataPoint)
 // Delete all data
 router.delete('/data' , deleteAllData)
 
-// Get all vehicleIDs
-router.get('/vehicleIDs', getVehicleIDs)
+// Get all vehicles
+router.get("/vehicles", getVehicles);
 
 module.exports = router

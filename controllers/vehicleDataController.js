@@ -250,15 +250,27 @@ const deleteAllData = async (req, res) => {
     }
 }
 
-// Get all the distinct vehicleIDs
-const getVehicleIDs = async (req, res) => {
+// Get all the distinct vehicles
+const getVehicles = async (req, res) => {
     try {
         const vehicleIDs = await VehicleData.distinct('vehicleID');
-        res.status(200).json(vehicleIDs);
+        const vehicleDataPromises = vehicleIDs.map(async (vehicleID) => {
+            // Get the corresponding vehicleName for each vehicleID
+            const vehicleData = await VehicleData.findOne({ vehicleID: vehicleID });
+            if (vehicleData) {
+                return { vehicleID: vehicleID, vehicleName: vehicleData.vehicleName };
+            }
+        });
+
+        const vehicleDataResults = await Promise.all(vehicleDataPromises);
+        const vehicleData = vehicleDataResults.filter((data) => data !== undefined);
+
+        res.status(200).json(vehicleData);
     } catch (error) {
         res.status(500).json({ error: 'Failed to get vehicleIDs' });
     }
 }
+
 
 module.exports = {
   uploadVehicleData,
@@ -274,5 +286,5 @@ module.exports = {
   getTimedDataStart,
   uploadManyVehicleData,
   getLatestFuelLevelData,
-  getVehicleIDs,
+  getVehicles,
 };

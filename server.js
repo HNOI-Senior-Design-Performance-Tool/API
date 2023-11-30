@@ -18,12 +18,13 @@ const aggregateDataRoutes = require('./routes/aggregateData')
 //   })
 // );
 
-// hosted on https://hnoi.netlify.app
+
 app.use(
-  cors({
-    origin: "https://hnoi.netlify.app",
-    credentials: true,
-  })
+    // allow CORS from hnoi.netlify.app and localhost:3000
+    cors({
+        origin: ["http://hnoi.netlify.app", "http://localhost:3000"],
+        credentials: true,
+    })
 );
 
 app.use(express.json());

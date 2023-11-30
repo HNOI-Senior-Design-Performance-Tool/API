@@ -5,14 +5,14 @@ const mongoose = require('mongoose')
 const getAvgData = async (req, res) => {
     const vehicleData = await AvgData.find({}).sort({ createdAt: -1 });
 
-    res.status(200).json(vehicleData) 
+    res.status(200).json(vehicleData[0]) 
 }
 
 // get all sum data from DB
 const getSumData = async (req, res) => {
     const vehicleData = await SumData.find({}).sort({ createdAt: -1 });
 
-    res.status(200).json(vehicleData)
+    res.status(200).json(vehicleData[0])
 }
 
 // Function for aggregating the existing timeseries data into a summation and average
