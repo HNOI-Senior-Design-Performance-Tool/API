@@ -30,136 +30,101 @@ const aggregateData = async (req, res) => {
     return res.status(404).json({ error: "No data within the range" });
   }
 
-  // get the existing average data from the database
-  const existingAvgData = await AvgData.findOne().sort({ createdAt: 1 });
-  const existingSumData = await SumData.findOne().sort({ createdAt: 1 });
+  // Keep a list of each vehicleID with changes to aggregated data
+  let vehicleIDs = [];
 
-  if (existingAvgData && existingSumData) {
-    // if aggreggate data exists, then the start time comes from the existing data
-    startTime = existingSumData.startTime;
+  // Iterate through each data point in vehicleData
+  await Promise.all(
+    vehicleData.sort((a, b) => a.time - b.time).map(async (dataPoint) => {
 
-    // Get the current running sum from sumData
-    var sum = {
-      mpg: existingSumData.mpg,
-      mpgCount: existingSumData.mpgCount,
+      // print the datapoint to the console
+      //console.log(dataPoint);
 
-      CO: existingSumData.CO,
-      COCount: existingSumData.COCount,
+      // list of fields to aggregate
+      const fields = ["mpg", "CO", "NOx", "particulateMatter"];
 
-      NOx: existingSumData.NOx,
-      NOxCount: existingSumData.NOxCount,
+      // object with increment values for each field
+      const inc = {};
+      fields.forEach((field) => {
+        if (dataPoint[field] !== undefined) {
+          inc[field] = dataPoint[field];
+          inc[`${field}Count`] = 1;
+        }
+      });
 
-      particulateMatter: existingSumData.particulateMatter,
-      particulateMatterCount: existingSumData.particulateMatterCount,
-    };
+      // add the vehicleID to the list of vehicleIDs if it is not already there
+      if (!vehicleIDs.includes(dataPoint.vehicleID)) {
+        vehicleIDs.push(dataPoint.vehicleID);
+      }
 
+      // get the start time for the vehicleID
+      const startTime = await SumData.findOne({ vehicleID: dataPoint.vehicleID })
+        .sort({ createdAt: -1 })
+        .then((sumData) => {
+          if (sumData) {
+            return sumData.startTime;
+          } else {
+            // if there is no sum data for the vehicleID, set the start time to the current time
+            return dataPoint.time;
+          }
+        });
 
-  }
-  else {
-    // clear the aggregate data in case only one of the documents is empty
-    await AvgData.deleteMany({});
-    await SumData.deleteMany({});
+      updatedData = await SumData.findOneAndUpdate(
+        { vehicleID: dataPoint.vehicleID }, // Filter: match the document with the same vehicleID
+        {
+          $set: {
+            startTime: startTime,
+            endTime: dataPoint.time, // Update: set the endTime field to the current time
+          },
+          $inc: inc, // Update: increment the sum and count fields
+          $currentDate: {
+            // Update: set the updatedAt field to the current time
+            updatedAt: { $type: "timestamp" },
+          },
+        },
+        {
+          upsert: true, // Options: create a new document if no document matches the filter
+          new: true, // Options: return the updated document
+        }
+      );
 
-    // if AvgData is not empty, then the start time comes from the first data point in vehicleData
-    startTime = vehicleData[0].createdAt;
-    
-    // Initialize objects to store the sum of each field and count of data points
-    var sum = {
-      mpg: 0,
-      mpgCount: 0,
+      // print the updated data to the console
+      console.log(updatedData);
 
-      CO: 0,
-      COCount: 0,
+    })
+  );
 
-      NOx: 0,
-      NOxCount: 0,
+  // Update averages
+  // Iterate through each vehicleID
+  await Promise.all(
+    vehicleIDs.map(async (vehicleID) => {
+      // Get the sum data for the vehicleID
+      const sumData = await SumData.findOne({ vehicleID });
 
-      particulateMatter: 0,
-      particulateMatterCount: 0,
-    };
-  }
+      // Create an object for the average data
+      const avgData = {
+        vehicleID: vehicleID,
+      };
 
+      // list of fields to average
+      const fields = ["mpg", "CO", "NOx", "particulateMatter"];
 
+      // Iterate through each field
+      fields.forEach((field) => {
+        // Calculate the average
+        avgData[field] = sumData[field] / sumData[`${field}Count`];
+      });
 
-  // Calculate the sum of each field and count of data points
-  vehicleData.forEach((dataPoint) => {
-    // Check if the field is valid first
-    if (dataPoint.mpg !== undefined) {
-        sum.mpg += dataPoint.mpg;
-        sum.mpgCount++;
-    }
-    if (dataPoint.CO !== undefined) {
-        sum.CO += dataPoint.CO;
-        sum.COCount++;
-    }
-    if (dataPoint.NOx !== undefined) {
-        sum.NOx += dataPoint.NOx;
-        sum.NOxCount++;
-    }
-    if (dataPoint.particulateMatter !== undefined) {
-        sum.particulateMatter += dataPoint.particulateMatter;
-        sum.particulateMatterCount++;
-    }
-  });
+      // Update the average data for the vehicleID
+      await AvgData.updateOne(
+        { vehicleID: vehicleID }, // Filter: match the document with the same vehicleID
+        avgData, // Update: set the average data
+        { upsert: true } // Options: create a new document if it does not exist
+      );
+    })
+  );
 
-  // Calculate the average of each field
-  const average = {};
-  for (const [key, value] of Object.entries(sum)) {
-
-    // if the field is a count, skip it
-    if (key.includes("Count")) {
-        average[key] = value;
-        continue;
-    }
-
-    const count = sum[`${key}Count`];
-
-    // if there is no data, set the average to -1
-    if ( count === 0) {
-      average[key] = -1;
-      continue;
-    }
-
-    // calculate the average
-    average[key] = value / count;
-
-  }
-
-  sum.startTime = startTime;
-  sum.endTime = latestTime;
-  sum.time = new Date();
-
-  average.startTime = startTime;
-  average.endTime = latestTime;
-  average.time = new Date(); 
-
-  if (existingSumData) {
-    // If a document exists, update it
-    await SumData.updateOne(
-        {},
-        sum
-    );
-  } else {
-    // If no document exists, create a new one
-    const sumData = await SumData.create(
-        sum
-    );
-  }
-
-  if (existingAvgData) {
-    // If a document exists, update it
-    await AvgData.updateOne(
-        {},
-        average
-    );
-  } else {
-    // If no document exists, create a new one
-    const averageData = await AvgData.create(
-        average
-    );
-  }
-
-  res.status(200).json( {average, sum} );
+  res.status(200).json({ message: "Data Aggregated Successfully" });
   console.log("Data Aggregated Successfully");
 }
 

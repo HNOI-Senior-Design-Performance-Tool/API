@@ -7,9 +7,9 @@ const vehicleDataSchema = new Schema({
         type: String,
         require: false
     },
-    vehicle_ID: {
-        type: String,
-        require: false  // TODO: Change to true
+    vehicleID: {
+        type: String, 
+        require: true
     },
     mpg: {
         type: Number,
@@ -45,6 +45,11 @@ const vehicleDataSchema = new Schema({
 // Data schema for aggregated data
 // Could be used for averaged data or summed data
 const aggregateDataSchema = new Schema({
+    vehicleID: {
+        type: String,
+        require: true
+    },
+
     mpg: Number,
     mpgCount: Number,
 
