@@ -37,9 +37,6 @@ const aggregateData = async (req, res) => {
   await Promise.all(
     vehicleData.sort((a, b) => a.time - b.time).map(async (dataPoint) => {
 
-      // print the datapoint to the console
-      //console.log(dataPoint);
-
       // list of fields to aggregate
       const fields = ["mpg", "CO", "NOx", "particulateMatter"];
 
@@ -87,9 +84,6 @@ const aggregateData = async (req, res) => {
           new: true, // Options: return the updated document
         }
       );
-
-      // print the updated data to the console
-      console.log(updatedData);
 
     })
   );

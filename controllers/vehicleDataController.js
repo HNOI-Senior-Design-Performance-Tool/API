@@ -250,6 +250,16 @@ const deleteAllData = async (req, res) => {
     }
 }
 
+// Get all the distinct vehicleIDs
+const getVehicleIDs = async (req, res) => {
+    try {
+        const vehicleIDs = await VehicleData.distinct('vehicleID');
+        res.status(200).json(vehicleIDs);
+    } catch (error) {
+        res.status(500).json({ error: 'Failed to get vehicleIDs' });
+    }
+}
+
 module.exports = {
   uploadVehicleData,
   getAllData,
@@ -264,4 +274,5 @@ module.exports = {
   getTimedDataStart,
   uploadManyVehicleData,
   getLatestFuelLevelData,
+  getVehicleIDs,
 };
