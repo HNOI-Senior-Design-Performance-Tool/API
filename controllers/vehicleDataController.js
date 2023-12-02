@@ -5,17 +5,19 @@ const fs = require('fs'); // Require the 'fs' module to work with files
 
 // Upload data
 const uploadVehicleData = async (req, res) => {
-    const {vehicleName, mpg, CO, NOx, particulateMatter, fuelLevel, voltage, time} = req.body
+    const {vehicleName, vehicleID, mpg, CO, NOx, particulateMatter, fuelLevel, flowrate, time} = req.body
 
     // Add data to DB
     try {
-        const vehicleData = await VehicleData.create({vehicleName, 
+        const vehicleData = await VehicleData.create({
+            vehicleName, 
+            vehicleID,
             mpg, 
             CO, 
             NOx, 
             particulateMatter, 
-            fuelLevel, 
-            voltage,
+            fuelLevel,
+            flowrate,
             time,
         })
         res.status(200).json(vehicleData)
@@ -36,17 +38,18 @@ const uploadManyVehicleData = async (req, res) => {
         const insertedData = [];
 
         for (const data of dataToInsert) {
-            const { vehicleName, mpg, CO, NOx, particulateMatter, fuelLevel, voltage, time } = data;
+            const { vehicleName, vehicleID, mpg, CO, NOx, particulateMatter, fuelLevel, flowrate, time } = data;
 
             // Add data to DB
             const vehicleData = await VehicleData.create({
                 vehicleName,
+                vehicleID,
                 mpg,
                 CO,
                 NOx,
                 particulateMatter,
                 fuelLevel,
-                voltage,
+                flowrate,
                 time,
             });
 
@@ -70,17 +73,18 @@ const uploadVehicleDataFile = async (req, res) => {
         // Parse the JSON data from the file
         const jsonData = JSON.parse(fileData)
 
-        const { vehicleName, mpg, CO, NOx, particulateMatter, fuelLevel, voltage, time } = jsonData
+        const { vehicleName, vehicleID, mpg, CO, NOx, particulateMatter, fuelLevel, flowrate, time } = jsonData
 
         // Add data to DB
         const vehicleData = await VehicleData.create({
             vehicleName,
+            vehicleID,
             mpg,
             CO,
             NOx,
             particulateMatter,
             fuelLevel,
-            voltage,
+            flowrate,
             time,
         })
 
@@ -90,95 +94,10 @@ const uploadVehicleDataFile = async (req, res) => {
     }
 }
 
-// Get all data
-const getAllData = async (req, res) => {
-    const vehicleData = await VehicleData.find({}).sort({createdAt: -1})
-
-    res.status(200).json(vehicleData) 
-}
-
-// Get latest single data point
-const getLatestDataPoint = async (req, res) => {
-    const vehicleData = await VehicleData.findOne({}).sort({time: -1})
-
-    if (!vehicleData) {
-        return res.status(404).json({error: 'Specified data not found'})
-    }
-
-    res.status(200).json(vehicleData)
-}
-
-// Get N latest data points
-const getNLatestData = async (req, res) => {
-    const { N } = req.params
-
-    const vehicleData = await VehicleData.find({}).sort({createdAt: -1}).limit(parseInt(N))
-
-    if (!vehicleData || vehicleData.length == 0) {
-        return res.status(404).json({error: 'Specified data not found'}) 
-    }
-
-    res.status(200).json(vehicleData)
-}
-
-// Get sorted data by date/time
-const getTimedData = async (req, res) => {
-    const { time } = req.params
-
-    const vehicleData = await VehicleData.findOne({ time: new Date(time)})
-
-    if (!vehicleData) {
-        return res.status(404).json({error: 'Specified data not found'})
-    }
-
-    res.status(200).json(vehicleData)
-}
-
-// Get sorted data by a date/time range
-const getTimedDataRange = async (req, res) => {
-    const { startTime, endTime } = req.params;
-
-    const vehicleData = await VehicleData.find({
-        time: {
-            $gte: new Date(startTime), // Greater than or equal to startTime
-            $lte: new Date(endTime)    // Less than or equal to endTime
-        }
-    });
-
-    if (!vehicleData || vehicleData.length === 0) {
-        return res.status(404).json({ error: 'No data within the range' });
-    }
-
-    res.status(200).json(vehicleData);
-}
-
-// Get sorted data by a start date/time
-const getTimedDataStart = async (req, res) => {
-    const { startTime } = req.params;
-    const startTimeDate = new Date(startTime);
-
-    // Check if startTime is a valid date/time
-    if(isNaN(Date.parse(startTimeDate))) {
-        return res.status(400).json({ error: 'Invalid date/time' });
-    }
-
-    const vehicleData = await VehicleData.find({
-      time: {
-        $gt: startTimeDate, // Greater than startTime
-      },
-    });
-
-    if (!vehicleData || vehicleData.length === 0) {
-        return res.status(204).json({ message: 'No data within the range' });
-    }
-
-    res.status(200).json(vehicleData);
-}
-
-
 // Get a single specific data
 const getDataPoint = async (req, res) => {
     const { id }  = req.params
+    
 
     if (!mongoose.Types.ObjectId.isValid(id)) {
         return res.status(404).json({error: 'Specified data not found'})
@@ -229,27 +148,6 @@ const updateDataPoint = async (req, res) => {
     res.status(200).json(vehicleData)
 }
 
-// Get latest Fuel Level data point
-const getLatestFuelLevelData = async (req, res) => {
-    const fuelLevelData = await VehicleData.findOne({}).sort({ time: -1 }).select('fuelLevel time');
-
-    if (!fuelLevelData) {
-        return res.status(404).json({ error: 'Specified data not found' });
-    }
-
-    res.status(200).json(fuelLevelData);
-}
-
-// Delete all data
-const deleteAllData = async (req, res) => {
-    try {
-        const vehicleData = await VehicleData.deleteMany({});
-        res.status(200).json({ message: `${vehicleData.deletedCount} data points deleted` });
-    } catch (error) {
-        res.status(500).json({ error: 'Failed to delete data' });
-    }
-}
-
 // Get all the distinct vehicles
 const getVehicles = async (req, res) => {
     try {
@@ -270,6 +168,149 @@ const getVehicles = async (req, res) => {
         res.status(500).json({ error: 'Failed to get vehicleIDs' });
     }
 }
+
+// The following functions accept an optional vehicleID parameter with which to filter
+
+// Get all data
+const getAllData = async (req, res) => {
+    const vehicleID = req.query.vehicleID;
+    const filter = vehicleID ? { vehicleID } : {};
+
+    const vehicleData = await VehicleData.find(filter).sort({createdAt: -1})
+
+    res.status(200).json(vehicleData) 
+}
+
+// Delete all data
+const deleteAllData = async (req, res) => {
+    const vehicleID = req.query.vehicleID;
+    const filter = vehicleID ? { vehicleID } : {};
+    try {
+        const vehicleData = await VehicleData.deleteMany(filter);
+        res.status(200).json({ message: `${vehicleData.deletedCount} data points deleted` });
+    } catch (error) {
+        res.status(500).json({ error: 'Failed to delete data' });
+    }
+}
+
+// Get latest single data point
+const getLatestDataPoint = async (req, res) => {
+    const vehicleID = req.query.vehicleID;
+    const filter = vehicleID ? { vehicleID } : {};
+
+    const vehicleData = await VehicleData.findOne(filter).sort({time: -1});
+
+    if (!vehicleData) {
+        return res.status(404).json({error: 'Specified data not found'})
+    }
+
+    res.status(200).json(vehicleData)
+}
+
+// Get N latest data points
+const getNLatestData = async (req, res) => {
+    const N = req.params.N
+    const vehicleID = req.query.vehicleID;
+    const filter = vehicleID ? { vehicleID } : {};
+
+    const vehicleData = await VehicleData.find(filter).sort({createdAt: -1}).limit(parseInt(N))
+
+    if (!vehicleData || vehicleData.length == 0) {
+        return res.status(404).json({error: 'Specified data not found'}) 
+    }
+
+    res.status(200).json(vehicleData)
+}
+
+// Get sorted data by date/time
+const getTimedData = async (req, res) => {
+    const time = req.params.time;
+    const vehicleID = req.query.vehicleID;
+    const filter = {
+      $and: [
+        { time: new Date(time) },
+        { vehicleID: vehicleID ? { vehicleID } : {} },
+      ],
+    };
+
+    const vehicleData = await VehicleData.findOne(filter)
+
+    if (!vehicleData) {
+        return res.status(404).json({error: 'Specified data not found'})
+    }
+
+    res.status(200).json(vehicleData)
+}
+
+// Get sorted data by a date/time range
+const getTimedDataRange = async (req, res) => {
+    const { startTime, endTime } = req.params;
+    const vehicleID = req.query.vehicleID;
+    const filter = {
+        $and: [
+            {time: {
+                $gte: new Date(startTime), // Greater than or equal to startTime
+                $lte: new Date(endTime)    // Less than or equal to endTime
+            }},
+            { vehicleID: vehicleID ? { vehicleID } : {} },
+        ]
+    }
+
+    const vehicleData = await VehicleData.find(filter);
+
+    if (!vehicleData || vehicleData.length === 0) {
+        return res.status(404).json({ error: "Specified data not found" });
+    }
+
+    res.status(200).json(vehicleData);
+}
+
+// Get sorted data by a start date/time
+const getTimedDataStart = async (req, res) => {
+    const startTime = req.params.startTime;
+    // Check if startTime is a valid date/time
+    if (isNaN(Date.parse(startTime))) {
+        return res.status(400).json({ error: "Invalid date/time" });
+    }
+    const startTimeDate = new Date(startTime);
+
+    const vehicleID = req.query.vehicleID;
+
+    let filter = {
+		time: {
+			$gt: startTimeDate, // Greater than startTime
+		},
+	};
+
+	if (vehicleID) {
+		filter.vehicleID = vehicleID ;
+	}
+
+    const vehicleData = await VehicleData.find(filter);
+
+    if (!vehicleData || vehicleData.length === 0) {
+        return res.status(204).json({ message: "Specified data not found" });
+    }
+
+    res.status(200).json(vehicleData);
+}
+
+
+// Get latest Fuel Level data point
+const getLatestFuelLevelData = async (req, res) => {
+    const vehicleID = req.query.vehicleID;
+    const filter = vehicleID ? { vehicleID } : {};
+
+    const fuelLevelData = await VehicleData.findOne(filter).sort({ time: -1 }).select('fuelLevel time');
+
+    if (!fuelLevelData) {
+        return res.status(404).json({ error: 'Specified data not found' });
+    }
+
+    res.status(200).json(fuelLevelData);
+}
+
+
 
 
 module.exports = {

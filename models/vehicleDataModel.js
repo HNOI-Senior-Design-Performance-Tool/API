@@ -45,6 +45,11 @@ const vehicleDataSchema = new Schema({
 // Data schema for aggregated data
 // Could be used for averaged data or summed data
 const aggregateDataSchema = new Schema({
+
+    vehicleName: {
+        type: String,
+        require: true
+    },
     vehicleID: {
         type: String,
         require: true

@@ -3,16 +3,32 @@ const mongoose = require('mongoose')
 
 // Get all avg data from DB
 const getAvgData = async (req, res) => {
-    const vehicleData = await AvgData.find({}).sort({ createdAt: -1 });
+  const vehicleID = req.query.vehicleID;
+  const filter = vehicleID ? { vehicleID } : {};
 
-    res.status(200).json(vehicleData[0]) 
+  const avgData = await AvgData.find(filter).sort({ createdAt: -1 });
+
+  // if avgData is only one entry, return that entry
+  if (avgData.length === 1) {
+    return res.status(200).json(avgData[0]);
+  }
+
+  res.status(200).json(avgData); 
 }
 
 // get all sum data from DB
 const getSumData = async (req, res) => {
-    const vehicleData = await SumData.find({}).sort({ createdAt: -1 });
+  const vehicleID = req.query.vehicleID;
+  const filter = vehicleID ? { vehicleID } : {};
 
-    res.status(200).json(vehicleData[0])
+  const sumData = await SumData.find(filter).sort({ createdAt: -1 });
+
+  // if sumData is only one entry, return that entry
+  if (sumData.length === 1) {
+    return res.status(200).json(sumData[0]);
+  }
+
+  res.status(200).json(sumData);
 }
 
 // Function for aggregating the existing timeseries data into a summation and average
@@ -70,6 +86,7 @@ const aggregateData = async (req, res) => {
         { vehicleID: dataPoint.vehicleID }, // Filter: match the document with the same vehicleID
         {
           $set: {
+            vehicleName: dataPoint.vehicleName,
             startTime: startTime,
             endTime: dataPoint.time, // Update: set the endTime field to the current time
           },
@@ -98,6 +115,9 @@ const aggregateData = async (req, res) => {
       // Create an object for the average data
       const avgData = {
         vehicleID: vehicleID,
+        vehicleName: sumData.vehicleName,
+        startTime: sumData.startTime,
+        endTime: sumData.endTime,
       };
 
       // list of fields to average
@@ -107,6 +127,9 @@ const aggregateData = async (req, res) => {
       fields.forEach((field) => {
         // Calculate the average
         avgData[field] = sumData[field] / sumData[`${field}Count`];
+
+        // add count field to avgData
+        avgData[`${field}Count`] = sumData[`${field}Count`];
       });
 
       // Update the average data for the vehicleID
