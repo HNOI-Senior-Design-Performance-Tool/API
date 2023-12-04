@@ -228,7 +228,7 @@ const getTimedData = async (req, res) => {
     const vehicleID = req.query.vehicleID;
     const filter = {
       $and: [
-        { time: new Date(time) },
+        { createdAt: new Date(time) },
         { vehicleID: vehicleID ? { vehicleID } : {} },
       ],
     };
@@ -247,14 +247,16 @@ const getTimedDataRange = async (req, res) => {
     const { startTime, endTime } = req.params;
     const vehicleID = req.query.vehicleID;
     const filter = {
-        $and: [
-            {time: {
-                $gte: new Date(startTime), // Greater than or equal to startTime
-                $lte: new Date(endTime)    // Less than or equal to endTime
-            }},
-            { vehicleID: vehicleID ? { vehicleID } : {} },
-        ]
-    }
+		$and: [
+			{
+				createdAt: {
+					$gte: new Date(startTime), // Greater than or equal to startTime
+					$lte: new Date(endTime), // Less than or equal to endTime
+				},
+			},
+			{ vehicleID: vehicleID ? { vehicleID } : {} },
+		],
+	};
 
     const vehicleData = await VehicleData.find(filter);
 
@@ -277,7 +279,7 @@ const getTimedDataStart = async (req, res) => {
     const vehicleID = req.query.vehicleID;
 
     let filter = {
-		time: {
+		createdAt: {
 			$gt: startTimeDate, // Greater than startTime
 		},
 	};
@@ -304,8 +306,8 @@ const getLatestFuelLevelData = async (req, res) => {
     const fuelLevelData = await VehicleData.findOne(filter).sort({ time: -1 }).select('fuelLevel time');
 
     if (!fuelLevelData) {
-        return res.status(404).json({ error: 'Specified data not found' });
-    }
+		return res.status(204).json({ error: "Specified data not found" });
+	}
 
     res.status(200).json(fuelLevelData);
 }

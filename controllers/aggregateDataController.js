@@ -31,6 +31,14 @@ const getSumData = async (req, res) => {
   res.status(200).json(sumData);
 }
 
+// Delete all the aggregate data from the database
+const deleteAllAggregateData = async (req, res) => {
+  await AvgData.deleteMany({});
+  await SumData.deleteMany({});
+  res.status(200).json({ message: "Aggregate Data Deleted Successfully" });
+  console.log("Aggregate Data Deleted Successfully");
+}
+
 // Function for aggregating the existing timeseries data into a summation and average
 const aggregateData = async (req, res) => {
   // get the latest datapoint from vehicleData
@@ -91,10 +99,6 @@ const aggregateData = async (req, res) => {
             endTime: dataPoint.time, // Update: set the endTime field to the current time
           },
           $inc: inc, // Update: increment the sum and count fields
-          $currentDate: {
-            // Update: set the updatedAt field to the current time
-            updatedAt: { $type: "timestamp" },
-          },
         },
         {
           upsert: true, // Options: create a new document if no document matches the filter
@@ -125,6 +129,12 @@ const aggregateData = async (req, res) => {
 
       // Iterate through each field
       fields.forEach((field) => {
+
+        // skip the field if it does not exist in the sum data
+        if (sumData[field] === undefined) {
+          return;
+        }
+
         // Calculate the average
         avgData[field] = sumData[field] / sumData[`${field}Count`];
 
@@ -146,7 +156,8 @@ const aggregateData = async (req, res) => {
 }
 
 module.exports = {
-    getAvgData,
-    getSumData,
-    aggregateData
-}
+  getAvgData,
+	getSumData,
+	aggregateData,
+	deleteAllAggregateData,
+};

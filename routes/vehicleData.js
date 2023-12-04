@@ -1,20 +1,20 @@
 const express = require('express')
 const multer = require('multer');
 const {
-  uploadVehicleData,
-  getAllData,
-  getDataPoint,
-  getTimedData,
-  getLatestDataPoint,
-  getNLatestData,
-  deleteDataPoint,
-  updateDataPoint,
-  deleteAllData,
-  getTimedDataRange,
-  getTimedDataStart,
-  uploadManyVehicleData,
-  getLatestFuelLevelData,
-  getVehicles,
+	uploadVehicleData,
+	uploadManyVehicleData,
+	getAllData,
+	getDataPoint,
+	getTimedData,
+	getLatestDataPoint,
+	getNLatestData,
+	deleteDataPoint,
+	updateDataPoint,
+	deleteAllData,
+	getTimedDataRange,
+	getTimedDataStart,
+	getLatestFuelLevelData,
+	getVehicles,
 } = require("../controllers/vehicleDataController");
 const VehicleData = require('../models/vehicleDataModel')
 
