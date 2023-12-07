@@ -43,6 +43,12 @@ const deleteAllAggregateData = async (req, res) => {
 const aggregateData = async (req, res) => {
   // get the latest datapoint from vehicleData
   const latestData = await VehicleData.findOne({}).sort({ createdAt: -1 });
+  
+  // if there is no data in the database, return an error
+  if (!latestData) {
+    return res.status(404).json({ error: "No data in the database" });
+  } 
+
   // the aggregate data will include data up to the latest datapoint
   const latestTime = latestData.time;
 
